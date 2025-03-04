@@ -1,0 +1,74 @@
+# .github/workflows/multi-stage-pipeline.yml
+
+name: Multi-Stage Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # Build Stage
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Build the application
+        run: |
+          npm run build
+
+  # Test Stage (depends on Build Stage)
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # This job will run only after the 'build' job is complete
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install
+
+      - name: Run tests
+        run: |
+          npm test
+
+  # Deploy Stage (depends on Test Stage)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # This job will run only after the 'test' job is complete
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Deploy application
+        run: |
+          echo "Deploying application to production..."
+          # Add your deployment script here
