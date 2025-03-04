@@ -23,5 +23,5 @@ jobs:
       - name: Trigger Child Workflow
         uses: peter-evans/workflow-dispatch@v1
         with:
-          workflow: child-workflow.yml
+          workflow: child-workflow.yaml
           ref: refs/heads/main
