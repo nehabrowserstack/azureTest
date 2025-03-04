@@ -1,0 +1,16 @@
+name: Child Workflow
+
+on:
+  workflow_dispatch:  # This enables the child workflow to be triggered via a dispatch event
+
+jobs:
+  child_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run Child Job Tasks
+        run: |
+          echo "This is the Child Job triggered by the Parent Workflow."
