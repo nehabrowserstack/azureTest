@@ -1,0 +1,27 @@
+name: Parent Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  parent_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run Parent Job Tasks
+        run: |
+          echo "This is the Parent Job."
+          
+      - name: Trigger Child Workflow
+        uses: peter-evans/workflow-dispatch@v1
+        with:
+          workflow: child-workflow.yml
+          ref: refs/heads/main
