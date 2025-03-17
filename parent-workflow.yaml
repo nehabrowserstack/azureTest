@@ -1,21 +1,9 @@
 trigger:
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Pipeline.Workspace)'
+    artifact: 'test'
+    publishLocation: 'pipeline'
   branches:
     include:
       - main  # Trigger on changes to 'main' branch
-
-pool:
-  vmImage: 'ubuntu-latest'  # Use Microsoft-hosted Ubuntu agent
-
-steps:
-  # Checkout the code from GitHub repository
-  - task: Checkout@2.229.0  # Correct task version reference
-    displayName: 'Checkout Code'
-
-  # Example build step (replace with your actual build/test commands)
-  - script: echo "Building the project"
-    displayName: 'Build Project'
-
-  # Publish artifacts
-  - publish: $(Build.ArtifactStagingDirectory)
-    artifact: drop
-    displayName: 'Publish Artifact'
