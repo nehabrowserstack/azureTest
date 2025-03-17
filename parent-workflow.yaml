@@ -7,7 +7,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-  - task: Checkout@2  # Checkout task
+  - task: Checkout  # Checkout task
     displayName: 'Checkout Code'
 
   - script: |
