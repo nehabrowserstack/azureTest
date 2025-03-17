@@ -8,7 +8,7 @@ pool:
 
 steps:
   # Checkout the code from GitHub repository
-  - task: Checkout@2.0  # Correct task version reference
+  - task: Checkout@2.229.0  # Correct task version reference
     displayName: 'Checkout Code'
 
   # Example build step (replace with your actual build/test commands)
