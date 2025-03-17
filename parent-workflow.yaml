@@ -1,27 +1,19 @@
-name: Parent Workflow
+trigger:
+- main  # Trigger pipeline on 'main' branch push
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+pool:
+  vmImage: 'ubuntu-latest'  # Use an Ubuntu agent
 
-jobs:
-  parent_job:
-    runs-on: ubuntu-latest
+steps:
+# Step 1: Checkout source code
+- task: Checkout@2
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+# Step 2: Create a sample file (this will be the artifact)
+- script: |
+    echo "Hello, this is a sample artifact file." > $(Build.ArtifactStagingDirectory)/sample-artifact.txt
+  displayName: 'Create Artifact File'
 
-      - name: Run Parent Job Tasks
-        run: |
-          echo "This is the Parent Job."
-          
-      - name: Trigger Child Workflow
-        uses: peter-evans/workflow-dispatch@v1
-        with:
-          workflow: child-workflow.yaml
-          ref: refs/heads/main
+# Step 3: Publish the artifact (artifact name: 'sample-artifact')
+- publish: $(Build.ArtifactStagingDirectory)
+  artifact: sample-artifact
+  displayName: 'Publish Artifact'
