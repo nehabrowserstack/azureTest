@@ -1,19 +1,15 @@
 trigger:
-- main  # Trigger pipeline on 'main' branch push
+  branches:
+    include:
+      - main  # Replace with your desired branch name
 
 pool:
-  vmImage: 'ubuntu-latest'  # Use an Ubuntu agent
+  vmImage: 'ubuntu-latest'
 
 steps:
-- task: Checkout@2
-  displayName: 'Checkout Code'
+  - task: Checkout@2  # Checkout task
+    displayName: 'Checkout Code'
 
-# Step 2: Create a sample file (this will be the artifact)
-- script: |
-    echo "Hello, this is a sample artifact file." > $(Build.ArtifactStagingDirectory)/sample-artifact.txt
-  displayName: 'Create Artifact File'
-
-# Step 3: Publish the artifact (artifact name: 'sample-artifact')
-- publish: $(Build.ArtifactStagingDirectory)
-  artifact: sample-artifact
-  displayName: 'Publish Artifact'
+  - script: |
+      echo "Pipeline is working!"
+    displayName: 'Test Step'
