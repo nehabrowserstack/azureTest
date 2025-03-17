@@ -1,9 +1,6 @@
-trigger:
+steps:
 - task: PublishPipelineArtifact@1
   inputs:
-    targetPath: '$(Pipeline.Workspace)'
-    artifact: 'test'
-    publishLocation: 'pipeline'
-  branches:
-    include:
-      - main  # Trigger on changes to 'main' branch
+    targetPath: '$(Build.BinariesDirectory)' # Or the folder containing the files you want to publish
+    artifact: 'my-build-output' # Name of the artifact
+    publishLocation: 'pipeline' # Publish to the pipeline
