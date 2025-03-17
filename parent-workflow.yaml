@@ -1,15 +1,21 @@
 trigger:
   branches:
     include:
-      - main  # Replace with your desired branch name
+      - main  # Trigger on changes to 'main' branch
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'  # Use Microsoft-hosted Ubuntu agent
 
 steps:
-  - task: Checkout  # Checkout task
+  # Checkout the code from GitHub repository
+  - task: Checkout@2  # Correct task version reference
     displayName: 'Checkout Code'
 
-  - script: |
-      echo "Pipeline is working!"
-    displayName: 'Test Step'
+  # Example build step (replace with your actual build/test commands)
+  - script: echo "Building the project"
+    displayName: 'Build Project'
+
+  # Publish artifacts
+  - publish: $(Build.ArtifactStagingDirectory)
+    artifact: drop
+    displayName: 'Publish Artifact'
