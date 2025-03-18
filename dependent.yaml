@@ -1,39 +1,48 @@
-# .github/workflows/dependent-pipeline.yml
+trigger:
+- main
 
-name: Dependent Pipeline
+pool:
+  vmImage: 'ubuntu-latest'
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  job1:
-    runs-on: ubuntu-latest
-
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: BuildJob
+    displayName: Build Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - script: |
+        echo "Building the application..."
+        # Simulate building some files
+        mkdir build_output
+        echo "File 1" > build_output/file1.txt
+        echo "File 2" > build_output/file2.txt
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Build Artifact'
+      inputs:
+        targetPath: 'build_output'
+        artifact: 'build_artifacts'
+        publishLocation: 'pipeline'
 
-      - name: Run Job 1 Tasks
-        run: |
-          echo "This is Job 1"
-          # Simulating some task, for example, a build
-          echo "Job 1 complete."
-
-  job2:
-    runs-on: ubuntu-latest
-    needs: job1  # This job will only run if job1 is successful
-
+- stage: Deploy
+  displayName: Deploy Stage
+  dependsOn: Build # Dependency on the Build stage
+  jobs:
+  - job: DeployJob
+    displayName: Deploy Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Run Job 2 Tasks
-        run: |
-          echo "This is Job 2, which depends on Job 1."
-          # Simulating a task that requires job1 to be successful
-          echo "Job 2 complete."
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Build Artifact'
+      inputs:
+        artifact: 'build_artifacts'
+        path: '$(System.ArtifactsDirectory)/build_artifacts'
+    - script: |
+        echo "Deploying the application..."
+        # Simulate using the downloaded artifacts
+        ls $(System.ArtifactsDirectory)/build_artifacts
+        cat $(System.ArtifactsDirectory)/build_artifacts/file1.txt
+        cat $(System.ArtifactsDirectory)/build_artifacts/file2.txt
+    - script: |
+        echo "Deploying to development environment..."
+        # Simulate environment-specific deployment
+        echo "Development deployment steps..."
