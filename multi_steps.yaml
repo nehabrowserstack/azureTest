@@ -1,74 +1,45 @@
-# .github/workflows/multi-stage-pipeline.yml
+trigger:
+- main
 
-name: Multi-Stage Pipeline
+pool:
+  vmImage: 'ubuntu-latest'
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-
-jobs:
-  # Build Stage
-  build:
-    runs-on: ubuntu-latest
-
+stages:
+- stage: QuickBuild
+  displayName: Quick Build
+  jobs:
+  - job: SimpleBuild
+    displayName: Simple Build Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - script: echo "Build successful." > build.log
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Build Log'
+      inputs:
+        targetPath: 'build.log'
+        artifact: 'build_log'
+        publishLocation: 'pipeline'
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: |
-          npm install
-
-      - name: Build the application
-        run: |
-          npm run build
-
-  # Test Stage (depends on Build Stage)
-  test:
-    runs-on: ubuntu-latest
-    needs: build  # This job will run only after the 'build' job is complete
-
+- stage: QuickTest
+  displayName: Quick Test
+  dependsOn: QuickBuild
+  jobs:
+  - job: SimpleTest
+    displayName: Simple Test Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+    - task: DownloadPipelineArtifact@2
+      displayName: 'Download Build Log'
+      inputs:
+        artifact: 'build_log'
+        path: '$(System.ArtifactsDirectory)'
+    - script: |
+        cat $(System.ArtifactsDirectory)/build.log
+        echo "Test successful."
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Install dependencies
-        run: |
-          npm install
-
-      - name: Run tests
-        run: |
-          npm test
-
-  # Deploy Stage (depends on Test Stage)
-  deploy:
-    runs-on: ubuntu-latest
-    needs: test  # This job will run only after the 'test' job is complete
-
+- stage: QuickDeploy
+  displayName: Quick Deploy
+  dependsOn: QuickTest
+  jobs:
+  - job: SimpleDeploy
+    displayName: Simple Deploy Job
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Deploy application
-        run: |
-          echo "Deploying application to production..."
-          # Add your deployment script here
+    - script: echo "Deployment successful."
